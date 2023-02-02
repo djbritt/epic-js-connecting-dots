@@ -1,0 +1,83 @@
+<body>
+  <canvas id="canvas"></canvas>
+
+  </body>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    const dots = [];
+    let lines = [];
+
+    // Initialize dots array with random positions and speeds
+    for (let i = 0; i < 100; i++) {
+      dots[i] = {
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        dx: (Math.random() - 0.5) * 2,
+        dy: (Math.random() - 0.5) * 2,
+      };
+    }
+
+    // Function to calculate the distance between two dots
+    const calculateDistance = (dot1, dot2) => {
+      const xDistance = dot1.x - dot2.x;
+      const yDistance = dot1.y - dot2.y;
+      return Math.sqrt(xDistance * xDistance + yDistance * yDistance);
+    };
+
+    // Function to update the position of the dots and check for connections
+    const update = () => {
+      lines = [];
+      for (let i = 0; i < dots.length; i++) {
+        const dot1 = dots[i];
+        for (let j = i + 1; j < dots.length; j++) {
+          const dot2 = dots[j];
+          const distance = calculateDistance(dot1, dot2);
+          if (distance < 150) {
+            lines.push([dot1, dot2]);
+          }
+        }
+        dot1.x += dot1.dx;
+        dot1.y += dot1.dy;
+        if (dot1.x > window.innerWidth || dot1.x < 0) {
+          dot1.dx = -dot1.dx;
+        }
+        if (dot1.y > window.innerHeight || dot1.y < 0) {
+          dot1.dy = -dot1.dy;
+        }
+      }
+    };
+
+    // Function to render the dots and lines
+    const render = () => {
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const line of lines) {
+        ctx.beginPath();
+        ctx.moveTo(line[0].x, line[0].y);
+        ctx.lineTo(line[1].x, line[1].y);
+        ctx.stroke();
+      }
+      for (const dot of dots) {
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    };
+
+    // Function to animate the dots and lines
+    const animate = () => {
+      update();
+      render();
+      requestAnimationFrame(animate);
+    };
+
+    // Start animation
+    animate();
+
+    </script>
